@@ -1,0 +1,17 @@
+- sensor:
+    - name: "Current Electricity Price"
+      unique_id: "current_electricity_price_sensor"
+      unit_of_measurement: "€/kWh" # Or your specific unit
+      state_class: "measurement"
+      device_class: "monetary" # Indicates it's a monetary value
+      icon: mdi:cash-multiple
+      state: >
+        {% set hour = now().hour %}
+        {% set day_price =  %}
+        {% set night_price = states('input_number.night_price') | float(0) %}
+
+        {% if hour >= 7 and hour < 23 %}
+          {{ day_price }}
+        {% else %}
+          {{ night_price }}
+        {% endif %}

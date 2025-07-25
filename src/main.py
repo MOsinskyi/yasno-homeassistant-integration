@@ -5,69 +5,77 @@ import sys
 
 from bs4 import BeautifulSoup
 from typing import Final
+from enum import Enum
+from datetime import datetime
 
 URL: Final[str] = "https://yasno.com.ua/b2c-tariffs"
+HEADERS: Final[dict] = {
+    "Accept": "text/html",
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_3_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Safari/605.1.15",
+}
+DIV: Final[str] = "partial-tariff-price"
 
 
-def get_response(url: str, headers: Final[dict]) -> Response | None:
-    try:
-        response: Response = requests.get(url, headers=headers, timeout=10)
-        response.raise_for_status()
-        return response
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching the page: {e}", file=sys.stderr)
-        return None
+class JSONHandler():
+    def __init__(self, filename: str) -> None:
+        self._filename: str = filename
+
+    def read(self) -> any:
+        with open(self._filename, "r") as f:
+            loaded_data: any = json.load(f)
+
+        return loaded_data
+
+    def write(self, data: any) -> None:
+        with open(self._filename, "w") as f:
+            json.dump(data, f, indent=4)
+
+
+class PriceParser():
+    def __init__(self, url: str, headers: dict) -> None:
+        self._url: str = url
+        self._headers: dict = headers
+        self._response: Response = self._get_response()
+        self._html: str = self._response.text
+        self._soup = BeautifulSoup(self._html, "html.parser")
+        self._price: float = self._get_price_from_page()
+
+    @property
+    def price(self) -> float:
+        return self._price
+
+    def _get_response(self) -> Response:
+        try:
+            r: Response = requests.get(
+                self._url, headers=self._headers, timeout=10)
+            r.raise_for_status()
+            return r
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching the page: {e}")
+            return None
+
+    def _get_price_from_page(self) -> float:
+        blocks = self._soup.find_all("div", class_=DIV)
+
+        for block in blocks:
+            title = block.find("h3", class_=f"{DIV}__title")
+            if title and title.text.strip() == "з ПДВ":
+                price = block.find("strong", class_=f"{DIV}__value")
+                if price:
+                    return float(price.text.replace(",", "."))
 
 
 class ElectricityTariff():
-    def __init__(self, url: str) -> None:
-        self._url: str = url
-        self._headers: Final[dict] = {
-            "Accept": "text/html",
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_3_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Safari/605.1.15",
+    def __init__(self, parser: PriceParser) -> None:
+        self._parser: PriceParser = parser
+        self._prices: dict = self._get_tariff()
+        self._hour = datetime.now().hour
+
+    def _get_tariff(self) -> dict:
+        return {
+            "day_price": self._parser.price,
+            "night_price": self._parser.price / 2,
         }
-
-        self._response: Response = get_response(self._url, self._headers)
-        self._soup = BeautifulSoup(self._response.text, "html.parser")
-
-        self._prices: dict | None = self._parse_prices()
-
-    def _parse_prices(self) -> dict | None:
-        title_element = self._soup.find("h3", class_="partial-tariff-price__title", string="з ПДВ")
-        
-        prices: dict = {}
-
-        if title_element:
-            parent_div = title_element.find_parent("div", class_="partial-tariff-price")
-
-            if parent_div:
-                price_element: any = self._soup.find("strong", class_="partial-tariff-price__value")
-
-                if price_element:
-                    try:
-                        day_price_text: str = price_element.get_text(strip=True)
-                        day_price_text = day_price_text.replace(",", ".")
-
-                        day_price: float = float(day_price_text)
-                        night_price: float = day_price / 2
-
-                        prices["day_price"] = day_price
-                        prices["night_price"] = night_price
-
-                    except ValueError as e:
-                        print(f"Error parsing day price from element '{day_price_text}': {e}", file=sys.stderr)
-                        return None
-                else:
-                    print("Could not find the price value element within the 'з ПДВ' block.", file=sys.stderr)
-                    return None
-            else:
-                print("Could not find the parent 'partial-tariff-price' div for 'з ПДВ' title.", file=sys.stderr)
-                return None
-        else:
-            print("Could not find the 'з ПДВ' title element on the page.", file=sys.stderr)
-            return None
-
-        return prices
 
     @property
     def prices(self) -> dict:
@@ -75,9 +83,11 @@ class ElectricityTariff():
 
 
 def main() -> None:
-    tariff = ElectricityTariff(URL)
-
-    print(json.dumps(tariff.prices)) if tariff else json.dumps({})
+    json_handler: JSONHandler = JSONHandler("price.json")
+    parser: PriceParser = PriceParser(URL, HEADERS)
+    tariff: ElectricityTariff = ElectricityTariff(parser)
+    json_handler.write(tariff.prices)
+    print(json_handler.read())
 
 if __name__ == "__main__":
     main()
