@@ -1,0 +1,17 @@
+- sensor:
+    command: "python3 /config/current-electricity-price/src/main.py"
+    name: Third Role Price
+    unique_id: "third_role_price"
+    unit_of_measurement: "UAH/kWh"
+    state_class: "measurement"
+    device_class: "monetary"
+    value_template: >
+      {% set hour = now().hour %}
+
+      {% if (hour >= 8 and hour < 11) or (hour >= 20 and hour < 22)%}
+        {{ value_json.third_role.peak }}
+      {% elif (hour >= 7 and hour < 8) or (hour >= 11 and hour < 20) or (hour >= 22 and hour < 23)%}
+        {{ value_json.third_role.half_peak }}
+      {% else %}
+        {{ value_json.third_role.night }}
+      {% endif %}
