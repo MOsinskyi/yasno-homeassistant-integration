@@ -3,4 +3,6 @@
     name: First Role Price
     unique_id: "first_role_price"
     unit_of_measurement: "грн/кВт·год"
+    state_class: "measurement"
+    device_class: "monetary"
     value_template: "{{value_json.first_role.with_fee}}"

@@ -3,6 +3,8 @@
     name: Second Role Price
     unique_id: "second_role_price"
     unit_of_measurement: "грн/кВт·год"
+    state_class: "measurement"
+    device_class: "monetary"
     value_template: >
       {% set hour = now().hour %}
 
