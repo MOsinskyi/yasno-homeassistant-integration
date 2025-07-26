@@ -2,6 +2,7 @@ import requests
 from requests import Response
 import json
 import sys
+import os
 
 from bs4 import BeautifulSoup
 from typing import Final
@@ -19,6 +20,11 @@ DIV: Final[str] = "partial-tariff-price"
 class JSONHandler():
     def __init__(self, filename: str) -> None:
         self._filename: str = filename
+
+    @property
+    def is_empty(self) -> bool:
+        return not os.path.exists(self._filename) \
+                or os.path.getsize(self._filename) == 0
 
     def read(self) -> any:
         with open(self._filename, "r") as f:
@@ -73,8 +79,8 @@ class ElectricityTariff():
 
     def _get_tariff(self) -> dict:
         return {
-            "day_price": self._parser.price,
-            "night_price": self._parser.price / 2,
+            "day": self._parser.price,
+            "night": self._parser.price / 2,
         }
 
     @property
@@ -83,11 +89,11 @@ class ElectricityTariff():
 
 
 def main() -> None:
-    json_handler: JSONHandler = JSONHandler("price.json")
     parser: PriceParser = PriceParser(URL, HEADERS)
     tariff: ElectricityTariff = ElectricityTariff(parser)
-    json_handler.write(tariff.prices)
-    print(json_handler.read())
+    hour = datetime.now().hour
+    print(tariff.prices["night"] if hour <= 7 and hour > 23 else tariff.prices["day"])
+
 
 if __name__ == "__main__":
     main()
