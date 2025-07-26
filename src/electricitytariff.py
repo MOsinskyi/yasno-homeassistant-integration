@@ -7,14 +7,14 @@ class ElectricityTariff():
 
     def _get_tariff(self) -> dict:
         return {
-            "first_role": {
+            "first_zone": {
                 "with_fee": self._parser.price,
             },
-            "second_role": {
+            "second_zone": {
                 "day": self._parser.price,
                 "night": round(self._parser.price / 2, 2),
             },
-            "third_role": {
+            "third_zone": {
                 "peak": round(self._parser.price * 1.5, 2),
                 "half_peak": self._parser.price,
                 "night": round(self._parser.price / 2.5, 2),

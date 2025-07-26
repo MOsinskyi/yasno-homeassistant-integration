@@ -1,7 +1,7 @@
 - sensor:
     command: "python3 /config/current-electricity-price/src/main.py"
-    name: Second Role Price
-    unique_id: "second_role_price"
+    name: Second Zone Price
+    unique_id: "second_zone_price"
     unit_of_measurement: "UAH/kWh"
     state_class: "measurement"
     device_class: "monetary"
@@ -9,7 +9,7 @@
       {% set hour = now().hour %}
 
       {% if hour >= 7 and hour < 23 %}
-        {{ value_json.second_role.day }}
+        {{ value_json.second_zone.day }}
       {% else %}
-        {{ value_json.second_role.day.night }}
+        {{ value_json.second_zone.day.night }}
       {% endif %}
