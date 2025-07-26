@@ -8,7 +8,7 @@ class ElectricityTariff():
     def _get_tariff(self) -> dict:
         return {
             "first_role": {
-                "with fee": self._parser.price,
+                "with_fee": self._parser.price,
             },
             "second_role": {
                 "day": self._parser.price,
