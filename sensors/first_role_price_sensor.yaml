@@ -2,7 +2,7 @@
     command: "python3 /config/current-electricity-price/src/main.py"
     name: First Role Price
     unique_id: "first_role_price"
-    unit_of_measurement: "грн/кВт·год"
+    unit_of_measurement: " UAH/kWh"
     state_class: "measurement"
     device_class: "monetary"
     value_template: "{{value_json.first_role.with_fee}}"
