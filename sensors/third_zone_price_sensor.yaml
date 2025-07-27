@@ -3,7 +3,6 @@
     name: Third Zone Price
     unique_id: "third_zone_price"
     unit_of_measurement: "UAH/kWh"
-    state_class: "measurement"
     device_class: "monetary"
     value_template: >
       {% set hour = now().hour %}

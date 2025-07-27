@@ -3,6 +3,5 @@
     name: First Zone Price
     unique_id: "first_zone_price"
     unit_of_measurement: "UAH/kWh"
-    state_class: "measurement"
     device_class: "monetary"
     value_template: "{{value_json.first_zone.with_fee}}"

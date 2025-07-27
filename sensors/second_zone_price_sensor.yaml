@@ -3,7 +3,6 @@
     name: Second Zone Price
     unique_id: "second_zone_price"
     unit_of_measurement: "UAH/kWh"
-    state_class: "measurement"
     device_class: "monetary"
     value_template: >
       {% set hour = now().hour %}
@@ -11,5 +10,5 @@
       {% if hour >= 7 and hour < 23 %}
         {{ value_json.second_zone.day }}
       {% else %}
-        {{ value_json.second_zone.day.night }}
+        {{ value_json.second_zone.night }}
       {% endif %}
