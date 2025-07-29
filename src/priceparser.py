@@ -16,29 +16,27 @@ DIV: Final[str] = "partial-tariff-price"
 
 class PriceParser():
     def __init__(self) -> None:
-        self._url = URL
-        self._headers = HEADERS
-        self._response = self._get_response()
-        self._html = self._response.text
-        self._soup = BeautifulSoup(self._html, "html.parser")
-        self._price = self._get_prices_from_page()
+        self.__url = URL
+        self.__headers = HEADERS
+        self.__response = self.__get_response()
+        self.__soup = BeautifulSoup(self.__response.text, "html.parser")
+        self.__price = self.__get_prices_from_the_page()
 
     @property
     def price(self) -> float:
-        return self._price
+        return self.__price
 
-    def _get_response(self) -> Response:
+    def __get_response(self) -> Response:
         try:
-            r = requests.get(
-                self._url, headers=self._headers, timeout=10)
+            r = requests.get(self.__url, headers=self.__headers, timeout=10)
             r.raise_for_status()
             return r
         except requests.exceptions.RequestException as e:
             print(f"Error fetching the page: {e}")
             return None
 
-    def _get_prices_from_page(self) -> float:
-        blocks = self._soup.find_all("div", class_=DIV)
+    def __get_prices_from_the_page(self) -> float:
+        blocks = self.__soup.find_all("div", class_=DIV)
 
         for block in blocks:
             title = block.find("h3", class_=f"{DIV}__title")
