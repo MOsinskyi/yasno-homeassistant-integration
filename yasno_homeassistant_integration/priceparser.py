@@ -14,7 +14,7 @@ HEADERS: Final[dict] = {
 DIV: Final[str] = "partial-tariff-price"
 
 
-class PriceParser():
+class PriceParser:
     def __init__(self) -> None:
         self.__url = URL
         self.__headers = HEADERS

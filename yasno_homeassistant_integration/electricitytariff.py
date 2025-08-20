@@ -1,6 +1,6 @@
 from priceparser import PriceParser
 
-class ElectricityTariff():
+class ElectricityTariff:
     def __init__(self, parser: PriceParser) -> None:
         self.__parser = parser
         self.__prices = self.__get_tariff()
