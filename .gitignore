@@ -3,6 +3,3 @@ __pycache__/
 .env
 .idea/
 /venv/
-/venv/bin
-/venv/lib64
-/venv/pyvenv.cfg
