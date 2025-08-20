@@ -27,7 +27,7 @@ Integrate your Yasno energy account with [Home Assistant](https://www.home-assis
     ```
 4. **Restart** Home Assistant.
 5. **Find** The sensors in entity tab
-![](images/image.png)
+![](docs/images/image.png)
 
 ---
 
