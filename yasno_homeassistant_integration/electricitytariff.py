@@ -1,4 +1,4 @@
-from priceparser import PriceParser
+from yasno_homeassistant_integration.priceparser import PriceParser
 
 class ElectricityTariff:
     def __init__(self, parser: PriceParser) -> None:
