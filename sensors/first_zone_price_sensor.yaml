@@ -1,5 +1,5 @@
 - sensor:
-    command: "python3 /config/current-electricity-price/src/main.py"
+    command: "python3 /config/current-electricity-price/yasno_homeassistant_integration/main.py"
     name: First Zone Price
     unique_id: "first_zone_price"
     unit_of_measurement: "UAH/kWh"
